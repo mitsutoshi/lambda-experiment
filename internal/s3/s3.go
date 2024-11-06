@@ -69,19 +69,19 @@ func PutObject(bucket, key string, r io.Reader, contentType string, timeout time
 	return nil
 }
 
-func DeleteObject(bucket string, key string) error {
+func DeleteObject(bucket, key string, timeout time.Duration) (*s3.DeleteObjectOutput, error) {
 
 	input := &s3.DeleteObjectInput{
 		Bucket: aws.String(bucket),
 		Key:    aws.String(key),
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
-	_, err := Client.DeleteObject(ctx, input)
+	obj, err := Client.DeleteObject(ctx, input)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+	return obj, nil
 }
